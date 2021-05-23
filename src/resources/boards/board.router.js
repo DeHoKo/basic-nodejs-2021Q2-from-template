@@ -1,0 +1,54 @@
+const router = require('express').Router();
+const ash = require('express-async-handler');
+const boardsService = require('./board.service');
+
+router.route('/').get(
+  ash(async (req, res) => {
+    const boards = await boardsService.getAll();
+
+    res.json(boards);
+  })
+);
+
+router.route('/:boardId').get(
+  ash(async (req, res) => {
+    const { boardId } = req.params;
+    const board = await boardsService.getBoardById(boardId);
+
+    res.status(board ? 200 : 404).json(board);
+  })
+);
+
+router.route('/').post(
+  ash(async (req, res) => {
+    const { body: boardData } = req;
+    const createdBoard = await boardsService.createBoard(boardData);
+
+    res.status(201).json(createdBoard);
+  })
+);
+
+router.route('/:boardId').put(
+  ash(async (req, res) => {
+    const { body: newBoardData } = req;
+    const { boardId } = req.params;
+
+    const oldBoardData = await boardsService.getBoardById(boardId);
+    const boardData = { ...oldBoardData, ...newBoardData };
+    const updatedBoardData = await boardsService.updateBoard(boardData);
+
+    res.json(updatedBoardData);
+  })
+);
+
+router.route('/:boardId').delete(
+  ash(async (req, res) => {
+    const { boardId } = req.params;
+
+    const isDeleted = await boardsService.deleteBoard(boardId);
+
+    res.sendStatus(isDeleted ? 204 : 404);
+  })
+);
+
+module.exports = router;
