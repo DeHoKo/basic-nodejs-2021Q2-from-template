@@ -1,4 +1,6 @@
-let BOARDS = [];
+import { IBoard } from '../../types';
+
+let BOARDS: Array<IBoard> = [];
 
 /**
  * Returns all boards
@@ -11,14 +13,14 @@ export const getAll = async () => BOARDS;
  * @param {string} boardId Id of the desired board
  * @returns {Promise<Object>} Promise represents the board by given Id
  */
-export const getBoardById = async (boardId) => BOARDS.find((board) => board.id === boardId);
+export const getBoardById = async (boardId: string) => BOARDS.find((board) => board.id === boardId);
 
 /**
  * Creates a board
  * @param {Object} board Object with information about a board
  * @returns {Promise<Object>} Promise represents the created board
  */
-export const createBoard = async (board) => {
+export const createBoard = async (board: IBoard) => {
   BOARDS.push(board);
 
   return board;
@@ -29,7 +31,7 @@ export const createBoard = async (board) => {
  * @param {Object} updatedBoard Object with information about a board
  * @returns {Promise<Object>} Promise represents the updated board
  */
-export const updateBoard = async (updatedBoard) => {
+export const updateBoard = async (updatedBoard: IBoard) => {
   const boardIndex = BOARDS.findIndex((board) => board.id === updatedBoard.id);
 
   BOARDS[boardIndex] = updatedBoard;
@@ -42,7 +44,7 @@ export const updateBoard = async (updatedBoard) => {
  * @param {string} boardId Id of the board that you want to delete
  * @returns {Promise<boolean>} Promise represents the result of the deletion process
  */
-export const deleteBoard = async (boardId) => {
+export const deleteBoard = async (boardId: string) => {
   const boardsLength = BOARDS.length;
   BOARDS = BOARDS.filter((board) => board.id !== boardId);
 

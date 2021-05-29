@@ -2,6 +2,8 @@ import * as usersRepo from './user.memory.repository';
 import UserModel from './user.model';
 import * as tasksService from '../tasks/task.service';
 
+import { IUser } from '../../types';
+
 /**
  * Returns all users
  * @returns {Promise<Array>} Promise represents array of users
@@ -13,14 +15,14 @@ export const getAll = () => usersRepo.getAll();
  * @param {string} userId Id of the desired user
  * @returns {Promise<Object>} Promise represents the user by given Id
  */
-export const getUserById = (userId) => usersRepo.getUserById(userId);
+export const getUserById = (userId: string) => usersRepo.getUserById(userId);
 
 /**
  * Creates a user
  * @param {Object} userData Object with information about a user
  * @returns {Promise<Object>} Promise represents the created user
  */
-export const createUser = (userData) => {
+export const createUser = (userData: IUser) => {
   const user = new UserModel(userData);
 
   return usersRepo.createUser(user);
@@ -31,7 +33,7 @@ export const createUser = (userData) => {
  * @param {Object} userData Object with information about a user
  * @returns Promise represents the updated user
  */
-export const updateUser = (userData) => {
+export const updateUser = (userData: IUser) => {
   const user = new UserModel(userData);
 
   return usersRepo.updateUser(user);
@@ -42,7 +44,11 @@ export const updateUser = (userData) => {
  * @param {string} userId Id of the user that you want to delete
  * @returns Promise represents the result of the deletion process
  */
-export const deleteUser = async (userId) => {
+export const deleteUser = async (userId: string | null) => {
+  if (userId === null) {
+    return undefined;
+  }
+  
   const userTasks = await tasksService.getTasksByUserId(userId);
 
   await Promise.all(

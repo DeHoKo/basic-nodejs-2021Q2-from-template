@@ -1,6 +1,22 @@
 import { v4 as uuid } from 'uuid';
 
-class Task {
+import { ITask } from '../../types';
+
+class Task implements ITask {
+  id: string;
+
+  title: string;
+
+  order: number;
+
+  description: string;
+
+  userId: string | null;
+
+  boardId: string;
+
+  columnId: string;
+
   constructor({
     id = uuid(),
     title = 'New task',
@@ -9,7 +25,7 @@ class Task {
     userId,
     boardId,
     columnId,
-  }) {
+  }: ITask) {
     this.id = id;
     this.title = title;
     this.order = order;

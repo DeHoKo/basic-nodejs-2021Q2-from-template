@@ -1,4 +1,6 @@
-let USERS = [];
+import { IUser } from '../../types';
+
+let USERS: Array<IUser> = [];
 
 /**
  * Returns all users
@@ -11,14 +13,14 @@ export const getAll = async () => USERS;
  * @param {string} userId Id of the desired user
  * @returns {Promise<Object>} Promise represents the user by given Id
  */
-export const getUserById = async (userId) => USERS.find((user) => user.id === userId);
+export const getUserById = async (userId: string) => USERS.find((user) => user.id === userId);
 
 /**
  * Creates a user
  * @param {Object} user Object with information about a user
  * @returns {Promise<Object>} Promise represents the created user
  */
-export const createUser = async (user) => {
+export const createUser = async (user: IUser) => {
   USERS.push(user);
 
   return user;
@@ -29,7 +31,7 @@ export const createUser = async (user) => {
  * @param {Object} updatedUser Object with information about a user
  * @returns Promise represents the updated user
  */
-export const updateUser = async (updatedUser) => {
+export const updateUser = async (updatedUser: IUser) => {
   const userIndex = USERS.findIndex((user) => user.id === updatedUser.id);
 
   USERS[userIndex] = updatedUser;
@@ -42,7 +44,7 @@ export const updateUser = async (updatedUser) => {
  * @param {string} userId Id of the user that you want to delete
  * @returns Promise represents the result of the deletion process
  */
-export const deleteUser = async (userId) => {
+export const deleteUser = async (userId: string) => {
   USERS = USERS.filter((user) => user.id !== userId);
 
   return true;
