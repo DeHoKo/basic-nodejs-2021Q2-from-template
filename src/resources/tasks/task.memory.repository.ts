@@ -1,37 +1,37 @@
-const tasksRepo = require('./task.memory.repository');
-const TaskModel = require('./task.model');
+let TASKS = [];
 
 /**
  * Returns tasks by board Id
  * @param {string} boardId Id of the board which contains tasks
  * @returns {Promise<Array>} Promise represents the array of tasks
  */
-const getTasksByBoardId = (boardId) => tasksRepo.getTasksByBoardId(boardId);
+export const getTasksByBoardId = async (boardId) =>
+  TASKS.filter((task) => task.boardId === boardId);
 
 /**
  * Returns tasks by user Id
  * @param {string} userId Id of the user who has tasks
  * @returns {Promise<Array>} Promise represents the array of tasks
  */
-const getTasksByUserId = (userId) => tasksRepo.getTasksByUserId(userId);
+export const getTasksByUserId = async (userId) =>
+  TASKS.filter((task) => task.userId === userId);
 
 /**
  * Returns a task by Id
  * @param {string} taskId Id of the desired task
  * @returns {Promise<Object>} Promise represents the task
  */
-const getTaskById = (taskId) => tasksRepo.getTaskById(taskId);
+export const getTaskById = async (taskId) => TASKS.find((task) => task.id === taskId);
 
 /**
  * Creates a task
- * @param {Object} taskData Object represents a task 
- * @param {string} boardId Id of the board where task should be put
+ * @param {Object} task Object represents a task
  * @returns {Promise<Object>} Promise represents a task
  */
-const createTask = (taskData, boardId) => {
-  const task = new TaskModel({ ...taskData, boardId });
+export const createTask = async (task) => {
+  TASKS.push(task);
 
-  return tasksRepo.createTask(task);
+  return task;
 };
 
 /**
@@ -39,10 +39,12 @@ const createTask = (taskData, boardId) => {
  * @param {Object} updatedTask Object with information about a task
  * @returns {Promise<Object>} Promise represents the updated task
  */
-const updateTask = (taskData) => {
-  const task = new TaskModel(taskData);
+export const updateTask = async (updatedTask) => {
+  const taskIndex = TASKS.findIndex((task) => task.id === updatedTask.id);
 
-  return tasksRepo.updateTask(task);
+  TASKS[taskIndex] = updatedTask;
+
+  return updatedTask;
 };
 
 /**
@@ -50,13 +52,8 @@ const updateTask = (taskData) => {
  * @param {string} taskId Id of the task that you want to delete
  * @returns {Promise<boolean>} Promise represents the result of the deletion process
  */
-const deleteTask = (taskId) => tasksRepo.deleteTask(taskId);
+export const deleteTask = async (taskId) => {
+  TASKS = TASKS.filter((task) => task.id !== taskId);
 
-module.exports = {
-  getTasksByBoardId,
-  getTasksByUserId,
-  getTaskById,
-  createTask,
-  updateTask,
-  deleteTask,
+  return true;
 };

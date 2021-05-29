@@ -1,7 +1,9 @@
-const router = require('express').Router();
-const ash = require('express-async-handler')
-const User = require('./user.model');
-const usersService = require('./user.service');
+import app from 'express';
+import ash from 'express-async-handler';
+import User from './user.model';
+import * as usersService from './user.service';
+
+const router = app.Router();
 
 router.route('/').get(ash(async (req, res) => {
   const users = await usersService.getAll();
@@ -51,4 +53,4 @@ router.route('/:userId').delete(
   })
 );
 
-module.exports = router;
+export default router;

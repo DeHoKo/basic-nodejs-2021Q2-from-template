@@ -1,6 +1,8 @@
-const router = require('express').Router();
-const ash = require('express-async-handler');
-const boardsService = require('./board.service');
+import app from 'express';
+import ash from 'express-async-handler';
+import * as boardsService from './board.service';
+
+const router = app.Router();
 
 router.route('/').get(
   ash(async (req, res) => {
@@ -51,4 +53,4 @@ router.route('/:boardId').delete(
   })
 );
 
-module.exports = router;
+export default router;
