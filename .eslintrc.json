@@ -13,6 +13,7 @@
   "parserOptions": {
     "sourceType": "module",
     "ecmaVersion": 2021,
+    "project": "./tsconfig.json",
     "ecmaFeatures": {
       "impliedStrict": true
     }
@@ -21,7 +22,7 @@
     "noInlineConfig": true
   },
   "extends": [
-    "airbnb-typescript",
+    "airbnb-typescript/base",
     "prettier"
   ],
   "rules": {
