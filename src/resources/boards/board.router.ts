@@ -1,9 +1,11 @@
-const router = require('express').Router();
-const ash = require('express-async-handler');
-const boardsService = require('./board.service');
+import app from 'express';
+import ash from 'express-async-handler';
+import * as boardsService from './board.service';
+
+const router = app.Router();
 
 router.route('/').get(
-  ash(async (req, res) => {
+  ash(async (_req, res) => {
     const boards = await boardsService.getAll();
 
     res.json(boards);
@@ -12,7 +14,7 @@ router.route('/').get(
 
 router.route('/:boardId').get(
   ash(async (req, res) => {
-    const { boardId } = req.params;
+    const { boardId } = req.params as { boardId: string };
     const board = await boardsService.getBoardById(boardId);
 
     res.status(board ? 200 : 404).json(board);
@@ -31,7 +33,7 @@ router.route('/').post(
 router.route('/:boardId').put(
   ash(async (req, res) => {
     const { body: newBoardData } = req;
-    const { boardId } = req.params;
+    const { boardId } = req.params as { boardId: string };
 
     const oldBoardData = await boardsService.getBoardById(boardId);
     const boardData = { ...oldBoardData, ...newBoardData };
@@ -43,7 +45,7 @@ router.route('/:boardId').put(
 
 router.route('/:boardId').delete(
   ash(async (req, res) => {
-    const { boardId } = req.params;
+    const { boardId } = req.params as { boardId: string };
 
     const isDeleted = await boardsService.deleteBoard(boardId);
 
@@ -51,4 +53,4 @@ router.route('/:boardId').delete(
   })
 );
 
-module.exports = router;
+export default router;

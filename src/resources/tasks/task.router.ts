@@ -1,9 +1,11 @@
-const router = require('express').Router();
-const ash = require('express-async-handler');
-const tasksService = require('./task.service');
+import app from 'express';
+import ash from 'express-async-handler';
+import * as tasksService from './task.service';
+
+const router = app.Router();
 
 router.route('/').get(
-  ash(async (req, res) => {
+  ash(async (_req, res) => {
     const { boardId } = res.locals;
     const tasks = await tasksService.getTasksByBoardId(boardId);
 
@@ -13,7 +15,7 @@ router.route('/').get(
 
 router.route('/:taskId').get(
   ash(async (req, res) => {
-    const { taskId } = req.params;
+    const { taskId } = req.params as { taskId: string };
     const task = await tasksService.getTaskById(taskId);
 
     res.status(task ? 200 : 404).json(task);
@@ -34,7 +36,7 @@ router.route('/').post(
 router.route('/:taskId').put(
   ash(async (req, res) => {
     const { body: newTaskData } = req;
-    const { taskId } = req.params;
+    const { taskId } = req.params as { taskId: string };
 
     const oldTaskData = await tasksService.getTaskById(taskId);
     const taskData = { ...oldTaskData, ...newTaskData };
@@ -46,7 +48,7 @@ router.route('/:taskId').put(
 
 router.route('/:taskId').delete(
   ash(async (req, res) => {
-    const { taskId } = req.params;
+    const { taskId } = req.params as { taskId: string };
 
     const isDeleted = await tasksService.deleteTask(taskId);
 
@@ -54,4 +56,4 @@ router.route('/:taskId').delete(
   })
 );
 
-module.exports = router;
+export default router;

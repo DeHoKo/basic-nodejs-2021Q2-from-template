@@ -1,9 +1,11 @@
-const router = require('express').Router();
-const ash = require('express-async-handler')
-const User = require('./user.model');
-const usersService = require('./user.service');
+import app from 'express';
+import ash from 'express-async-handler';
+import User from './user.model';
+import * as usersService from './user.service';
 
-router.route('/').get(ash(async (req, res) => {
+const router = app.Router();
+
+router.route('/').get(ash(async (_req, res) => {
   const users = await usersService.getAll();
   // map user fields to exclude secret fields like "password"
   res.json(users.map(User.toResponse));
@@ -11,7 +13,7 @@ router.route('/').get(ash(async (req, res) => {
 
 router.route('/:userId').get(
   ash(async (req, res) => {
-    const { userId } = req.params;
+    const { userId } = req.params as { userId: string };
     const user = await usersService.getUserById(userId);
 
     res.status(user ? 200 : 404).json(User.toResponse(user));
@@ -31,7 +33,7 @@ router.route('/').post(
 router.route('/:userId').put(
   ash(async (req, res) => {
     const { body: newUserData } = req;
-    const { userId } = req.params;
+    const { userId } = req.params as { userId: string };
 
     const oldUserData = await usersService.getUserById(userId);
     const userData = { ...oldUserData, ...newUserData };
@@ -43,7 +45,7 @@ router.route('/:userId').put(
 
 router.route('/:userId').delete(
   ash(async (req, res) => {
-    const { userId } = req.params;
+    const { userId } = req.params as { userId: string };
 
     const isDeleted = await usersService.deleteUser(userId);
 
@@ -51,4 +53,4 @@ router.route('/:userId').delete(
   })
 );
 
-module.exports = router;
+export default router;
