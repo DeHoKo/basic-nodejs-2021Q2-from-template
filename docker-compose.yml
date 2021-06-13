@@ -17,6 +17,7 @@ services:
       ERROR_LOG_FILE_PATH: ${ERROR_LOG_FILE_PATH}
     restart: on-failure
     volumes: 
+      - ./:/usr/app
       - /custom/mount/nodejs/logs:/usr/app/logs
   postgres:
     build: ./database/
