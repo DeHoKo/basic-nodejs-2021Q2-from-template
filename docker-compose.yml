@@ -1,0 +1,39 @@
+version: '3'
+services: 
+  node:
+    build: .
+    networks: 
+      - dehoko_network
+    ports: 
+      - ${PORT}:${PORT}
+    depends_on: 
+      - postgres
+    environment:
+      NODE_ENV: ${NODE_ENV} 
+      PORT: ${PORT}
+      AUTH_MODE: ${AUTH_MODE}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      REQUEST_LOG_FILE_PATH: ${REQUEST_LOG_FILE_PATH}
+      ERROR_LOG_FILE_PATH: ${ERROR_LOG_FILE_PATH}
+    restart: on-failure
+    volumes: 
+      - ./:/usr/app
+      - /custom/mount/nodejs/logs:/usr/app/logs
+  postgres:
+    build: ./database/
+    networks: 
+      - dehoko_network
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    environment: 
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    restart: on-failure
+    volumes: 
+      - /custom/mount:/var/lib/postgresql/data
+
+networks: 
+  dehoko_network:
+    name: dehoko_network
