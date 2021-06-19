@@ -25,3 +25,8 @@ export interface IUser {
   login: string;
   password: string;
 }
+
+export enum LogType {
+  REQUEST = 'REQUEST',
+  ERROR = 'ERROR'
+}
