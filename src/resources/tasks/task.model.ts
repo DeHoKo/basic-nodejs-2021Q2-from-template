@@ -1,39 +1,38 @@
-import { v4 as uuid } from 'uuid';
+import { Entity, Column as TypeORMColumn, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import User from '../users/user.model';
+import Column from '../columns/column.model';
+import Board from '../boards/board.model';
 
 import { ITask } from '../../types';
 
+@Entity()
 class Task implements ITask {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @TypeORMColumn({
+    length: 50,
+    default: 'New task'
+  })
   title: string;
 
+  @TypeORMColumn()
   order: number;
 
+  @TypeORMColumn({
+    type: 'text',
+    default: 'A new task'
+  })
   description: string;
 
-  userId: string | null;
+  @ManyToOne(() => User, user => user.id, { cascade: true })
+  user: User;
 
-  boardId: string;
+  @ManyToOne(() => Board, board => board.id, { cascade: true })
+  board: Board;
 
-  columnId: string;
-
-  constructor({
-    id = uuid(),
-    title = 'New task',
-    order,
-    description = 'A new task',
-    userId,
-    boardId,
-    columnId,
-  }: ITask) {
-    this.id = id;
-    this.title = title;
-    this.order = order;
-    this.description = description;
-    this.userId = userId;
-    this.boardId = boardId;
-    this.columnId = columnId;
-  }
+  @ManyToOne(() => Column, column => column.id, { cascade: true })
+  column: Column;
 }
 
 export default Task;

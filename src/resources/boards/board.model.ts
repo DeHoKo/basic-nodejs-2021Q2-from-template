@@ -1,19 +1,21 @@
-import { v4 as uuid } from 'uuid';
+import { Entity, Column as TypeORMColumn, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import Column from '../columns/column.model';
 
-import { IBoard, Column } from '../../types';
+import { IBoard } from '../../types';
 
+@Entity()
 class Board implements IBoard {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @TypeORMColumn({
+    length: 50,
+    default: 'New board'
+  })
   title: string;
 
-  columns: Array<Column>;
-
-  constructor({ id = uuid(), title = 'New board', columns = [] }: IBoard = {} as IBoard) {
-    this.id = id;
-    this.title = title;
-    this.columns = columns.map((column) => ({ id: uuid(), ...column }));
-  }
+  @ManyToOne(() => Column, column => column.id, { cascade: true })
+  column: Column;
 }
 
 export default Board;

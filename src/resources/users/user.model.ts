@@ -1,27 +1,29 @@
-import { v4 as uuid } from 'uuid';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 import { IUser } from '../../types';
 
+@Entity()
 class User implements IUser {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({
+    length: 50,
+    default: 'USER'
+  })
   name: string;
 
+  @Column({
+    length: 64,
+    default: 'user'
+  })
   login: string;
 
+  @Column({
+    length: 64,
+    default: 'P@55w0rd'
+  })
   password: string;
-
-  constructor({
-    id = uuid(),
-    name = 'USER',
-    login = 'user',
-    password = 'P@55w0rd',
-  }: IUser = {} as IUser) {
-    this.id = id;
-    this.name = name;
-    this.login = login;
-    this.password = password;
-  }
 
   static toResponse(user: IUser | undefined) {
     if (user) {

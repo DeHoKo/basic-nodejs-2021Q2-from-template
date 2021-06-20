@@ -1,6 +1,4 @@
-import * as usersRepo from './user.memory.repository';
-import UserModel from './user.model';
-import * as tasksService from '../tasks/task.service';
+import * as usersRepo from './user.repository';
 
 import { IUser } from '../../types';
 
@@ -22,22 +20,14 @@ export const getUserById = (userId: string) => usersRepo.getUserById(userId);
  * @param {Object} userData Object with information about a user
  * @returns {Promise<Object>} Promise represents the created user
  */
-export const createUser = (userData: IUser) => {
-  const user = new UserModel(userData);
-
-  return usersRepo.createUser(user);
-};
+export const createUser = (userData: IUser) => usersRepo.createUser(userData);
 
 /**
  * Updates a user
  * @param {Object} userData Object with information about a user
  * @returns Promise represents the updated user
  */
-export const updateUser = (userData: IUser) => {
-  const user = new UserModel(userData);
-
-  return usersRepo.updateUser(user);
-};
+export const updateUser = (userData: IUser) => usersRepo.updateUser(userData);
 
 /**
  * Deletes a user
@@ -48,14 +38,6 @@ export const deleteUser = async (userId: string | null) => {
   if (userId === null) {
     return undefined;
   }
-  
-  const userTasks = await tasksService.getTasksByUserId(userId);
-
-  await Promise.all(
-    userTasks.map((userTask) =>
-      tasksService.updateTask({ ...userTask, userId: null })
-    )
-  );
 
   return usersRepo.deleteUser(userId);
 };
