@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import { Entity, Column as TypeORMColumn, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import User from '../users/user.model';
 import Column from '../columns/column.model';
@@ -25,10 +26,19 @@ class Task implements ITask {
   })
   description: string;
 
-  @ManyToOne(() => User, user => user.id, { cascade: true })
+  @TypeORMColumn({ nullable: true })
+  userId: string;
+
+  @TypeORMColumn({ nullable: true })
+  boardId: string;
+
+  @TypeORMColumn({ nullable: true })
+  columnId: string;
+
+  @ManyToOne(() => User, user => user.id, { onUpdate: 'CASCADE' })
   user: User;
 
-  @ManyToOne(() => Board, board => board.id, { cascade: true })
+  @ManyToOne(() => Board, board => board.id, { cascade: true, onDelete: 'CASCADE' })
   board: Board;
 
   @ManyToOne(() => Column, column => column.id, { cascade: true })

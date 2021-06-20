@@ -1,19 +1,26 @@
+import { getRepository } from '../utils';
 import { IBoard } from '../../types';
-
-let BOARDS: Array<IBoard> = [];
+import Board from './board.model';
+import Column from '../columns/column.model';
 
 /**
  * Returns all boards
  * @returns {Promise<Array>} Promise represents array of boards
  */
-export const getAll = async () => BOARDS;
+export const getAll = async () => {
+  const boardRepository = await getRepository(Board);
+  return boardRepository.find();
+};
 
 /**
  * Returns a board by Id
  * @param {string} boardId Id of the desired board
  * @returns {Promise<Object>} Promise represents the board by given Id
  */
-export const getBoardById = async (boardId: string) => BOARDS.find((board) => board.id === boardId);
+export const getBoardById = async (boardId: string) => {
+  const boardRepository = await getRepository(Board);
+  return boardRepository.findOne({ id: boardId });
+};
 
 /**
  * Creates a board
@@ -21,9 +28,19 @@ export const getBoardById = async (boardId: string) => BOARDS.find((board) => bo
  * @returns {Promise<Object>} Promise represents the created board
  */
 export const createBoard = async (board: IBoard) => {
-  BOARDS.push(board);
+  const newBoard = new Board();
+  newBoard.title = board.title;
 
-  return board;
+  const columns = board.columns.map(column => {
+    const newColumn = new Column();
+    newColumn.order = column.order;
+    newColumn.title = column.title;
+    return newColumn;
+  })
+
+  newBoard.columns = columns;
+  const boardRepository = await getRepository(Board);
+  return boardRepository.save(newBoard);
 };
 
 /**
@@ -32,11 +49,14 @@ export const createBoard = async (board: IBoard) => {
  * @returns {Promise<Object>} Promise represents the updated board
  */
 export const updateBoard = async (updatedBoard: IBoard) => {
-  const boardIndex = BOARDS.findIndex((board) => board.id === updatedBoard.id);
+  const board = await getBoardById(updatedBoard.id);
+  if (!board) {
+    return undefined;
+  }
 
-  BOARDS[boardIndex] = updatedBoard;
-
-  return updatedBoard;
+  board.title = updatedBoard.title;
+    const boardRepository = await getRepository(Board);
+    return boardRepository.save(board);
 };
 
 /**
@@ -45,9 +65,11 @@ export const updateBoard = async (updatedBoard: IBoard) => {
  * @returns {Promise<boolean>} Promise represents the result of the deletion process
  */
 export const deleteBoard = async (boardId: string) => {
-  const boardsLength = BOARDS.length;
-  BOARDS = BOARDS.filter((board) => board.id !== boardId);
+  const board = await getBoardById(boardId);
+  if (!board) {
+    return undefined;
+  }
 
-  // if the item was deleted this expression is true
-  return BOARDS.length < boardsLength;
+  const boardRepository = await getRepository(Board);
+  return boardRepository.remove(board);
 };

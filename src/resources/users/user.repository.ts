@@ -1,6 +1,7 @@
 import { getRepository } from '../utils';
 import { IUser } from '../../types';
 import User from './user.model';
+import { getTasksByUserId, updateTask } from '../tasks/task.repository';
 
 /**
  * Returns all users
@@ -61,10 +62,21 @@ export const updateUser = async (updatedUser: IUser) => {
  */
 export const deleteUser = async (userId: string) => {
   const user = await getUserById(userId);
+  if (!user) {
+    return undefined;
+  }
+  const tasks = await getTasksByUserId(user.id);
+  if (tasks && tasks.length) {
+    await Promise.all(tasks.map(task => {
+      // eslint-disable-next-line no-param-reassign
+      task.userId = null as unknown as string;
+      return updateTask(task);
+    }));
+  }
 
   const userRepository = await getRepository(User);
   if (user) {
-    return userRepository.remove(user);
+    return await userRepository.remove(user);
   }
   return undefined;
 };

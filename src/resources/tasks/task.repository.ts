@@ -27,7 +27,12 @@ export const getTasksByUserId = async (userId: string) => {
     boardId: string;
     columnId: string;
   }>(Task);
-  return taskRepository.find({ userId });
+  try {
+    return await taskRepository.find({ userId });
+  } catch (e) {
+    console.log('DELETE USER ERROR: ', e);
+    return undefined;
+  }
 }
 
 /**
@@ -60,7 +65,7 @@ export const createTask = async (task: ITask & {
   newTask.description = task.description;
   newTask.order = task.order;
   newTask.title = task.title;
-  newTask.userId = task.userId;
+  newTask.userId = task.userId as unknown as string;
 
   const userRepository = await getRepository(Task);
   return userRepository.save(newTask);
@@ -89,7 +94,7 @@ export const updateTask = async (updatedTask: ITask & {
   task.description = updatedTask.description;
   task.order = updatedTask.order;
   task.title = updatedTask.title;
-  task.userId = updatedTask.userId;
+  task.userId = updatedTask.userId as unknown as string;
 
   const userRepository = await getRepository(Task);
   return userRepository.save(task);

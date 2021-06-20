@@ -1,6 +1,7 @@
-import { Entity, Column as TypeORMColumn, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import Column from '../columns/column.model';
-
+/* eslint-disable import/no-cycle */
+import { Entity, Column as TypeORMColumn, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import Column from '../columns/column.model'; 
+import Task from '../tasks/task.model';
 import { IBoard } from '../../types';
 
 @Entity()
@@ -14,8 +15,11 @@ class Board implements IBoard {
   })
   title: string;
 
-  @ManyToOne(() => Column, column => column.id, { cascade: true })
-  column: Column;
+  @OneToMany(() => Column, column => column.board)
+  columns: Column[];
+
+  @OneToMany(() => Task, task => task.board)
+  tasks: Task[];
 }
 
 export default Board;
