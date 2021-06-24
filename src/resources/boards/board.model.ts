@@ -16,9 +16,9 @@ class Board implements IBoard {
   title: string;
 
   @OneToMany(() => Column, column => column.board)
-  columns: Column[];
+  columns: Column[] | undefined;
 
-  @OneToMany(() => Task, task => task.board)
+  @OneToMany(() => Task, task => task.board, { onUpdate: 'CASCADE', cascade: ['update', 'insert'] })
   tasks: Task[];
 }
 

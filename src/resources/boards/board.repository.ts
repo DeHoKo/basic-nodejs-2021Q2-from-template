@@ -19,7 +19,14 @@ export const getAll = async () => {
  */
 export const getBoardById = async (boardId: string) => {
   const boardRepository = await getRepository(Board);
-  return boardRepository.findOne({ id: boardId });
+  const board = await boardRepository.createQueryBuilder('board')
+    .leftJoinAndSelect('board.columns', 'column')
+      .where('board.id = :boardId', { boardId })
+      .getOne();
+  if (!board?.columns?.length) {
+    delete board?.columns;
+  }
+  return board;
 };
 
 /**
@@ -31,12 +38,15 @@ export const createBoard = async (board: IBoard) => {
   const newBoard = new Board();
   newBoard.title = board.title;
 
-  const columns = board.columns.map(column => {
-    const newColumn = new Column();
-    newColumn.order = column.order;
-    newColumn.title = column.title;
-    return newColumn;
-  })
+  let columns;
+  if (board.columns) {
+    columns = board.columns.map(column => {
+      const newColumn = new Column();
+      newColumn.order = column.order;
+      newColumn.title = column.title;
+      return newColumn;
+    })
+  }
 
   newBoard.columns = columns;
   const boardRepository = await getRepository(Board);
@@ -49,14 +59,40 @@ export const createBoard = async (board: IBoard) => {
  * @returns {Promise<Object>} Promise represents the updated board
  */
 export const updateBoard = async (updatedBoard: IBoard) => {
-  const board = await getBoardById(updatedBoard.id);
+  const boardRepository = await getRepository(Board);
+  const board = await boardRepository.findOne(updatedBoard.id);
   if (!board) {
     return undefined;
   }
 
+  // const columns = updatedBoard.columns.map(column => {
+  //   const newColumn = new Column();
+  //   newColumn.order = column.order;
+  //   newColumn.title = column.title;
+  //   return newColumn;
+  // })
+
+  // board.columns = columns;
   board.title = updatedBoard.title;
-    const boardRepository = await getRepository(Board);
-    return boardRepository.save(board);
+  const savedBoard = await boardRepository.save(board);
+  console.log('SAVED BOARD: ', savedBoard);
+  const columnRepository = await getRepository(Column);
+  let columns;
+  if (updatedBoard.columns) {
+    columns = updatedBoard.columns.map(column => {
+      const newColumn = new Column();
+      newColumn.boardId = savedBoard.id;
+      newColumn.order = column.order;
+      newColumn.title = column.title;
+      return columnRepository.save(newColumn);
+    })
+  }
+  if (columns) {
+    await Promise.all(columns);
+  }
+  const thisBoard = await getBoardById(savedBoard.id);
+  console.log('AGAIN SAVED BOARD: ', thisBoard);
+  return savedBoard;
 };
 
 /**
