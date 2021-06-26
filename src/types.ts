@@ -1,4 +1,5 @@
-export type Column = {
+export interface IColumn {
+  id: string;
   title: string;
   order: number;
 }
@@ -6,7 +7,7 @@ export type Column = {
 export interface IBoard {
   id: string;
   title: string;
-  columns: Array<Column>;
+  columns?: IColumn[];
 }
 
 export interface ITask {
@@ -14,9 +15,6 @@ export interface ITask {
   title: string;
   order: number;
   description: string;
-  userId: string | null;
-  boardId: string;
-  columnId: string;
 }
 
 export interface IUser {

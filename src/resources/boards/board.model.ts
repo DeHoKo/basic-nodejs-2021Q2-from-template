@@ -1,19 +1,25 @@
-import { v4 as uuid } from 'uuid';
+/* eslint-disable import/no-cycle */
+import { Entity, Column as TypeORMColumn, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import Column from '../columns/column.model'; 
+import Task from '../tasks/task.model';
+import { IBoard } from '../../types';
 
-import { IBoard, Column } from '../../types';
-
+@Entity()
 class Board implements IBoard {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @TypeORMColumn({
+    length: 50,
+    default: 'New board'
+  })
   title: string;
 
-  columns: Array<Column>;
+  @OneToMany(() => Column, column => column.board)
+  columns: Column[] | undefined;
 
-  constructor({ id = uuid(), title = 'New board', columns = [] }: IBoard = {} as IBoard) {
-    this.id = id;
-    this.title = title;
-    this.columns = columns.map((column) => ({ id: uuid(), ...column }));
-  }
+  @OneToMany(() => Task, task => task.board, { onUpdate: 'CASCADE', cascade: ['update', 'insert'] })
+  tasks: Task[];
 }
 
 export default Board;

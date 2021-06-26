@@ -33,12 +33,8 @@ router.route('/').post(
 router.route('/:boardId').put(
   ash(async (req, res) => {
     const { body: newBoardData } = req;
-    const { boardId } = req.params as { boardId: string };
-
-    const oldBoardData = await boardsService.getBoardById(boardId);
-    const boardData = { ...oldBoardData, ...newBoardData };
-    const updatedBoardData = await boardsService.updateBoard(boardData);
-
+  
+    const updatedBoardData = await boardsService.updateBoard(newBoardData);
     res.json(updatedBoardData);
   })
 );

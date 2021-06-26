@@ -1,5 +1,4 @@
-import * as tasksRepo from './task.memory.repository';
-import TaskModel from './task.model';
+import * as tasksRepo from './task.repository';
 
 import { ITask } from '../../types';
 
@@ -31,22 +30,24 @@ export const getTaskById = (taskId: string) => tasksRepo.getTaskById(taskId);
  * @param {string} boardId Id of the board where task should be put
  * @returns {Promise<Object>} Promise represents a task
  */
-export const createTask = (taskData: ITask, boardId: string) => {
-  const task = new TaskModel({ ...taskData, boardId });
-
-  return tasksRepo.createTask(task);
-};
+export const createTask = (taskData: ITask & {
+  userId: string | null;
+  boardId: string;
+  columnId: string;
+}, boardId: string) => 
+  tasksRepo.createTask({ ...taskData, boardId });
 
 /**
  * Updates a task
  * @param {Object} updatedTask Object with information about a task
  * @returns {Promise<Object>} Promise represents the updated task
  */
-export const updateTask = (taskData: ITask) => {
-  const task = new TaskModel(taskData);
-
-  return tasksRepo.updateTask(task);
-};
+export const updateTask = (taskData: ITask & {
+  userId: string | null;
+  boardId: string;
+  columnId: string;
+}) =>
+  tasksRepo.updateTask(taskData);
 
 /**
  * Deletes a task

@@ -15,7 +15,6 @@ router.route('/:userId').get(
   ash(async (req, res) => {
     const { userId } = req.params as { userId: string };
     const user = await usersService.getUserById(userId);
-
     res.status(user ? 200 : 404).json(User.toResponse(user));
   })
 );
@@ -47,9 +46,9 @@ router.route('/:userId').delete(
   ash(async (req, res) => {
     const { userId } = req.params as { userId: string };
 
-    const isDeleted = await usersService.deleteUser(userId);
+    await usersService.deleteUser(userId);
 
-    res.json(isDeleted);
+    res.sendStatus(200);
   })
 );
 
