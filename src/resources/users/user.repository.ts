@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import { getRepository } from '../utils';
 import { IUser } from '../../types';
 import User from './user.model';
@@ -29,9 +30,12 @@ export const getUserById = async (userId: string) => {
  */
 export const createUser = async (user: IUser) => {
   const newUser = new User();
+
+  const hashedPassword = bcrypt.hashSync(user.password, 10);
+
   newUser.login = user.login;
   newUser.name = user.name;
-  newUser.password = user.password;
+  newUser.password = hashedPassword;
 
   const userRepository = await getRepository(User);
   return userRepository.save(newUser);
@@ -43,13 +47,16 @@ export const createUser = async (user: IUser) => {
  * @returns Promise represents the updated user
  */
 export const updateUser = async (updatedUser: IUser) => {
-  const user = await getUserById(updatedUser.id);
+  const user = await getUserById(updatedUser.id!);
   if (!user) {
     return undefined;
   }
+
+  const hashedPassword = bcrypt.hashSync(updatedUser.password, 10);
+
   user.login = updatedUser.login;
   user.name = updatedUser.name;
-  user.password = updatedUser.password;
+  user.password = hashedPassword;
 
   const userRepository = await getRepository(User);
   return userRepository.save(user);
